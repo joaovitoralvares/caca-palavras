@@ -52,6 +52,7 @@ int main()
     al_init_primitives_addon(); // inicilaiza o primitives addon do allegro (necessario pra desenhar na tela)
 
     ALLEGRO_COLOR branco = al_map_rgb(255, 255, 255);
+    ALLEGRO_COLOR preto = al_map_rgb(0, 0, 0);
 
     al_install_mouse(); // installa o mouse pro allegro
 
@@ -97,14 +98,25 @@ int main()
     //  =================================================================================
     //                             Organização das palavras
     //  =================================================================================
-    string palavras[] = {"arroz", "feijao", "batata", "macarrao", "peixe", "passas", "couve", "strgonof", "salada", "fricasse"};
+    string palavras[][10] = {
+                            {"arroz", "feijao", "batata", "macarrao", "peixe", "passas", "couve", "strgonof", "salada", "fricasse"},
+                            {"adicao", "subtracao", "multiplicacao", "divisao", "potenciacao", "radiciacao", "igualdade", "maior", "menor", "diferente"},
+                            {"vermelho", "azul", "amarelo", "verde", "ciano", "magenta", "branco", "preto", "cinza", "marrom"},
+                            {"Brasil", "Argentina", "Chile", "Colombia", "Peru", "Equador", "Venezuela", "Bolivia", "Paraguai", "Uruguai"},
+                            {"violao", "guitarra", "violino", "violoncelo", "contrabaixo", "harpa", "bandolim", "cavaquinho", "ukulele", "banjo"},
+                            {"leao", "tigre", "elefante", "girafa", "rinoceronte", "hipopotamo", "crocodilo", "gorila", "lobo", "urso"},
+                            {"medico", "professor", "engenheiro", "advogado", "arquiteto", "contador", "dentista", "psicologo", "jornalista", "chef de cozinha"},
+                            {"rock", "pop", "jazz", "samba", "rap", "reggae", "eletronica", "classica", "funk", "country"},
+                            {"futebol", "basquete", "tenis", "natacao", "volei", "atletismo", "golfe", "handebol", "boxe", "judo"},
+                            {"hidrogenio", "oxigenio", "carbono", "nitrogenio", "sodio", "ferro", "calcio", "potassio", "ouro", "prata"}};
 
     char matriz[20][20];
+    srand(time(NULL));
 
-    int load = 0, tam_total = 0;
-    for (int i = 0; i < sizeof(palavras) / sizeof(string); i++)
+    int load = 0, tam_total = 0, banco_sorteado = rand()%10;
+    for (int i = 0; i < sizeof(palavras) / sizeof(string) * 2; i++)
     {
-        tam_total += palavras[i].length();
+        tam_total += palavras[banco_sorteado][i].length();
     }
     int posicoes_palavras_verticais[5][3];
     int posicoes_palavras_horizontais[5][3];
@@ -129,9 +141,9 @@ int main()
         cout << "Carregando " << load << "% ... \n";
         // al_draw_textf(font, al_map_rgb(0, 0, 0), DISP_W * 0.45, DISP_H * 0.5, 0 , "Carregando %d %...", load);
 
-        string escolhida = palavras[i];
+        string escolhida = palavras[banco_sorteado][i];
         bool teste_coluna = true;
-        int tam_max = 20 - palavras[i].length(), pos_palavra = rand() % tam_max, iteracao_escolhida = 0, pos_coluna;
+        int tam_max = 20 - palavras[banco_sorteado][i].length(), pos_palavra = rand() % tam_max, iteracao_escolhida = 0, pos_coluna;
         do
         {
             srand((time(NULL)));
@@ -161,9 +173,9 @@ int main()
         system("cls");
         cout << "Carregando " << load << "% ... \n";
         // al_draw_textf(font, al_map_rgb(0, 0, 0), DISP_W * 0.45, DISP_H * 0.5, 0 , "Carregando %d %...", load);
-        string escolhida = palavras[i];
+        string escolhida = palavras[banco_sorteado][i];
         bool teste_linha = true;
-        int tam_max = 20 - palavras[i].length(), pos_palavra = rand() % tam_max, iteracao_escolhida = 0, pos_linha;
+        int tam_max = 20 - palavras[banco_sorteado][i].length(), pos_palavra = rand() % tam_max, iteracao_escolhida = 0, pos_linha;
         do
         {
             srand((time(NULL)));
@@ -210,7 +222,8 @@ int main()
     //  =================================================================================
     //                                 Fila de Eventos
     //  =================================================================================
-    int acertos = 0;
+    
+    int acertos = 0, palavras_acertadas[10];
     bool click_button_tes = false;
     al_start_timer(timer); // inicializa o timer
     // enquanto a aplicacao nao fechar faca
@@ -273,6 +286,7 @@ int main()
 
             if (click_button_tes)
             {
+                al_draw_pixel(mouseClickPositionX_init, mouseClickPositionY_init, branco);
                 al_draw_line(mouseClickPositionX_init, mouseClickPositionY_init, mouseClickPositionX_end, mouseClickPositionY_end, branco, 5);
             }
             // for (int i = 0; i < 20; i++)
@@ -281,8 +295,6 @@ int main()
             //     {
             //     }
             // }
-
-
 
             for (int i = 0; i < 20; i++)
             {
@@ -295,21 +307,31 @@ int main()
             }
 
             al_flip_display(); // atualiza a tela
+
             // posicoes_palavras_verticais[i][0] = pos_palavra;
             // posicoes_palavras_verticais[i][1] = pos_coluna;
             // posicoes_palavras_verticais[i][2] = pos_palavra + escolhida.length();
 
             for (int i = 0; i < 5; i++)
             {
+                for(int j=0; j<acertos; j++){
+                    if (i == palavras_acertadas[j])
+                    {
+                        i++;
+                    }
+                    
+                }
                 if (mouseClickPositionX_init > quadrado[posicoes_palavras_verticais[i][0]][posicoes_palavras_verticais[i][1]].posX1 && mouseClickPositionX_init < quadrado[posicoes_palavras_verticais[i][0]][posicoes_palavras_verticais[i][1]].posX2 && mouseClickPositionY_init > quadrado[posicoes_palavras_verticais[i][0]][posicoes_palavras_verticais[i][1]].posY1 && mouseClickPositionY_init < quadrado[posicoes_palavras_verticais[i][0]][posicoes_palavras_verticais[i][1]].posY2)
                 {
                     if (mouseClickPositionX_end > quadrado[posicoes_palavras_verticais[i][2]][posicoes_palavras_verticais[i][1]].posX1 && mouseClickPositionX_end < quadrado[posicoes_palavras_verticais[i][2]][posicoes_palavras_verticais[i][1]].posX2 && mouseClickPositionY_end > quadrado[posicoes_palavras_verticais[i][2]][posicoes_palavras_verticais[i][1]].posY1 && mouseClickPositionY_end < quadrado[posicoes_palavras_verticais[i][2]][posicoes_palavras_verticais[i][1]].posY2)
                     {
+                        palavras_acertadas[acertos]=i;
                         acertos++;
                         mouseClickPositionX_init = NULL;
                         mouseClickPositionY_init = NULL;
                         mouseClickPositionX_end = NULL;
                         mouseClickPositionY_end = NULL;
+
                     }
                 }
             }
@@ -320,10 +342,18 @@ int main()
 
             for (int i = 0; i < 5; i++)
             {
+                for(int j=0; j<acertos; j++){
+                    if (i == palavras_acertadas[j])
+                    {
+                        i++;
+                    }
+                    
+                }
                 if (mouseClickPositionX_init > quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][0]].posX1 && mouseClickPositionX_init < quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][0]].posX2 && mouseClickPositionY_init > quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][0]].posY1 && mouseClickPositionY_init < quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][0]].posY2)
                 {
                     if (mouseClickPositionX_end > quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][2]].posX1 && mouseClickPositionX_end < quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][2]].posX2 && mouseClickPositionY_end > quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][2]].posY1 && mouseClickPositionY_end < quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][2]].posY2)
                     {
+                        palavras_acertadas[acertos]=i;
                         acertos++;
                         mouseClickPositionX_init = NULL;
                         mouseClickPositionY_init = NULL;
@@ -333,9 +363,9 @@ int main()
                 }
             }
 
-
-            if(acertos >=10){
-                done =true;
+            if (acertos >= 10)
+            {
+                done = true;
             }
 
             logic = false;
