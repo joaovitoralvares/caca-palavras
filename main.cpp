@@ -99,21 +99,21 @@ int main()
     //                             Organização das palavras
     //  =================================================================================
     string palavras[][10] = {
-                            {"arroz", "feijao", "batata", "macarrao", "peixe", "passas", "couve", "strgonof", "salada", "fricasse"},
-                            {"adicao", "subtracao", "multiplicacao", "divisao", "potenciacao", "radiciacao", "igualdade", "maior", "menor", "diferente"},
-                            {"vermelho", "azul", "amarelo", "verde", "ciano", "magenta", "branco", "preto", "cinza", "marrom"},
-                            {"Brasil", "Argentina", "Chile", "Colombia", "Peru", "Equador", "Venezuela", "Bolivia", "Paraguai", "Uruguai"},
-                            {"violao", "guitarra", "violino", "violoncelo", "contrabaixo", "harpa", "bandolim", "cavaquinho", "ukulele", "banjo"},
-                            {"leao", "tigre", "elefante", "girafa", "rinoceronte", "hipopotamo", "crocodilo", "gorila", "lobo", "urso"},
-                            {"medico", "professor", "engenheiro", "advogado", "arquiteto", "contador", "dentista", "psicologo", "jornalista", "chef de cozinha"},
-                            {"rock", "pop", "jazz", "samba", "rap", "reggae", "eletronica", "classica", "funk", "country"},
-                            {"futebol", "basquete", "tenis", "natacao", "volei", "atletismo", "golfe", "handebol", "boxe", "judo"},
-                            {"hidrogenio", "oxigenio", "carbono", "nitrogenio", "sodio", "ferro", "calcio", "potassio", "ouro", "prata"}};
+        {"arroz", "feijao", "batata", "macarrao", "peixe", "passas", "couve", "strgonof", "salada", "fricasse"},
+        {"adicao", "subtracao", "multiplicacao", "divisao", "potenciacao", "radiciacao", "igualdade", "maior", "menor", "diferente"},
+        {"vermelho", "azul", "amarelo", "verde", "ciano", "magenta", "branco", "preto", "cinza", "marrom"},
+        {"Brasil", "Argentina", "Chile", "Colombia", "Peru", "Equador", "Venezuela", "Bolivia", "Paraguai", "Uruguai"},
+        {"violao", "guitarra", "violino", "violoncelo", "contrabaixo", "harpa", "bandolim", "cavaquinho", "ukulele", "banjo"},
+        {"leao", "tigre", "elefante", "girafa", "rinoceronte", "hipopotamo", "crocodilo", "gorila", "lobo", "urso"},
+        {"medico", "professor", "engenheiro", "advogado", "arquiteto", "contador", "dentista", "psicologo", "jornalista", "chef de cozinha"},
+        {"rock", "pop", "jazz", "samba", "rap", "reggae", "eletronica", "classica", "funk", "country"},
+        {"futebol", "basquete", "tenis", "natacao", "volei", "atletismo", "golfe", "handebol", "boxe", "judo"},
+        {"hidrogenio", "oxigenio", "carbono", "nitrogenio", "sodio", "ferro", "calcio", "potassio", "ouro", "prata"}};
 
     char matriz[20][20];
     srand(time(NULL));
 
-    int load = 0, tam_total = 0, banco_sorteado = rand()%10;
+    int load = 0, tam_total = 0, banco_sorteado = rand() % 9;
     for (int i = 0; i < sizeof(palavras) / sizeof(string) * 2; i++)
     {
         tam_total += palavras[banco_sorteado][i].length();
@@ -148,7 +148,7 @@ int main()
         {
             srand((time(NULL)));
             teste_coluna = true;
-            pos_coluna = rand() % 20;
+            pos_coluna = rand() % 19;
             for (int j = pos_palavra; j < pos_palavra + escolhida.length() && teste_coluna == true; j++)
             {
                 if (matriz[j][pos_coluna] != '0')
@@ -162,6 +162,8 @@ int main()
         {
             matriz[j][pos_coluna] = escolhida[iteracao_escolhida];
         }
+
+        cout << "vertical " << i << ". Posicao: " << pos_palavra << "," << pos_coluna << " Tamanho: " << escolhida.length() << " " << escolhida << endl;
         posicoes_palavras_verticais[i][0] = pos_palavra;
         posicoes_palavras_verticais[i][1] = pos_coluna;
         posicoes_palavras_verticais[i][2] = pos_palavra + escolhida.length() - 1;
@@ -180,7 +182,7 @@ int main()
         {
             srand((time(NULL)));
             teste_linha = true;
-            pos_linha = rand() % 20;
+            pos_linha = rand() % 19;
             for (int j = pos_palavra; j < pos_palavra + escolhida.length() && teste_linha == true; j++)
             {
                 if (matriz[pos_linha][j] != '0')
@@ -194,6 +196,7 @@ int main()
         {
             matriz[pos_linha][j] = escolhida[iteracao_escolhida];
         }
+        cout << "horizontal " << i - 5 << ". Posicao: " << pos_palavra << "," << pos_linha << " Tamanho: " << escolhida.length() << " " << escolhida << endl;
         posicoes_palavras_horizontais[i - 5][0] = pos_palavra;
         posicoes_palavras_horizontais[i - 5][1] = pos_linha;
         posicoes_palavras_horizontais[i - 5][2] = pos_palavra + escolhida.length() - 1;
@@ -222,13 +225,16 @@ int main()
     //  =================================================================================
     //                                 Fila de Eventos
     //  =================================================================================
-    
-    int acertos = 0, palavras_acertadas[10];
+
+    int acertos = 0, palavras_acertadas[10][3];
+    Quadrado_letra linhas_palavras_acertadas[10];
+
     bool click_button_tes = false;
     al_start_timer(timer); // inicializa o timer
     // enquanto a aplicacao nao fechar faca
     while (!done)
     {
+
         al_wait_for_event(queue, &event); // espera o proximo evento
 
         // verifica o proximo evento
@@ -270,9 +276,10 @@ int main()
         //  =================================================================================
         //                                 Eventos na tela
         //  =================================================================================
+
         if (logic)
         {
-
+            bool palavra_repetida = false;
             // DRAW
 
             //  =================================================================================
@@ -306,6 +313,13 @@ int main()
                 }
             }
 
+            for (int index = 0; index < acertos; index++)
+            {
+                // std::cout << "posicao: " << index << " acertos: " << acertos << std::endl;
+                al_draw_pixel(linhas_palavras_acertadas[index].posX1, linhas_palavras_acertadas[index].posY1, branco);
+                al_draw_line(linhas_palavras_acertadas[index].posX1, linhas_palavras_acertadas[index].posY1, linhas_palavras_acertadas[index].posX2, linhas_palavras_acertadas[index].posY2, branco, 5);
+            }
+
             al_flip_display(); // atualiza a tela
 
             // posicoes_palavras_verticais[i][0] = pos_palavra;
@@ -314,24 +328,39 @@ int main()
 
             for (int i = 0; i < 5; i++)
             {
-                for(int j=0; j<acertos; j++){
-                    if (i == palavras_acertadas[j])
-                    {
-                        i++;
-                    }
-                    
-                }
+
                 if (mouseClickPositionX_init > quadrado[posicoes_palavras_verticais[i][0]][posicoes_palavras_verticais[i][1]].posX1 && mouseClickPositionX_init < quadrado[posicoes_palavras_verticais[i][0]][posicoes_palavras_verticais[i][1]].posX2 && mouseClickPositionY_init > quadrado[posicoes_palavras_verticais[i][0]][posicoes_palavras_verticais[i][1]].posY1 && mouseClickPositionY_init < quadrado[posicoes_palavras_verticais[i][0]][posicoes_palavras_verticais[i][1]].posY2)
                 {
                     if (mouseClickPositionX_end > quadrado[posicoes_palavras_verticais[i][2]][posicoes_palavras_verticais[i][1]].posX1 && mouseClickPositionX_end < quadrado[posicoes_palavras_verticais[i][2]][posicoes_palavras_verticais[i][1]].posX2 && mouseClickPositionY_end > quadrado[posicoes_palavras_verticais[i][2]][posicoes_palavras_verticais[i][1]].posY1 && mouseClickPositionY_end < quadrado[posicoes_palavras_verticais[i][2]][posicoes_palavras_verticais[i][1]].posY2)
                     {
-                        palavras_acertadas[acertos]=i;
-                        acertos++;
-                        mouseClickPositionX_init = NULL;
-                        mouseClickPositionY_init = NULL;
-                        mouseClickPositionX_end = NULL;
-                        mouseClickPositionY_end = NULL;
+                        for (int j = 0; j < acertos; j++)
+                        {
+                            if (
+                                palavras_acertadas[j][0] == posicoes_palavras_verticais[i][0] && palavras_acertadas[j][1] == posicoes_palavras_verticais[i][1] && palavras_acertadas[j][2] == posicoes_palavras_verticais[i][2])
+                            {
+                                cout << "palavra repetida" << endl;
+                                palavra_repetida = true;
+                            }
+                        }
 
+                        if (!palavra_repetida)
+                        {
+
+                            linhas_palavras_acertadas[acertos].posX1 = mouseClickPositionX_init;
+                            linhas_palavras_acertadas[acertos].posY1 = mouseClickPositionY_init;
+                            linhas_palavras_acertadas[acertos].posX2 = mouseClickPositionX_end;
+                            linhas_palavras_acertadas[acertos].posY2 = mouseClickPositionY_end;
+
+                            palavras_acertadas[acertos][0] = posicoes_palavras_verticais[i][0];
+                            palavras_acertadas[acertos][1] = posicoes_palavras_verticais[i][1];
+                            palavras_acertadas[acertos][2] = posicoes_palavras_verticais[i][2];
+
+                            acertos++;
+                            mouseClickPositionX_init = NULL;
+                            mouseClickPositionY_init = NULL;
+                            mouseClickPositionX_end = NULL;
+                            mouseClickPositionY_end = NULL;
+                        }
                     }
                 }
             }
@@ -342,23 +371,39 @@ int main()
 
             for (int i = 0; i < 5; i++)
             {
-                for(int j=0; j<acertos; j++){
-                    if (i == palavras_acertadas[j])
-                    {
-                        i++;
-                    }
-                    
-                }
+
                 if (mouseClickPositionX_init > quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][0]].posX1 && mouseClickPositionX_init < quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][0]].posX2 && mouseClickPositionY_init > quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][0]].posY1 && mouseClickPositionY_init < quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][0]].posY2)
                 {
                     if (mouseClickPositionX_end > quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][2]].posX1 && mouseClickPositionX_end < quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][2]].posX2 && mouseClickPositionY_end > quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][2]].posY1 && mouseClickPositionY_end < quadrado[posicoes_palavras_horizontais[i][1]][posicoes_palavras_horizontais[i][2]].posY2)
                     {
-                        palavras_acertadas[acertos]=i;
-                        acertos++;
-                        mouseClickPositionX_init = NULL;
-                        mouseClickPositionY_init = NULL;
-                        mouseClickPositionX_end = NULL;
-                        mouseClickPositionY_end = NULL;
+                        for (int j = 0; j < acertos; j++)
+                        {
+                            if (
+                                palavras_acertadas[j][0] == posicoes_palavras_horizontais[i][0] && palavras_acertadas[j][1] == posicoes_palavras_horizontais[i][1] && palavras_acertadas[j][2] == posicoes_palavras_horizontais[i][2])
+                            {
+                                cout << "palavras repetidas" << endl;
+                                palavra_repetida = true;
+                            }
+                        }
+
+                        if (!palavra_repetida)
+                        {
+
+                            linhas_palavras_acertadas[acertos].posX1 = mouseClickPositionX_init;
+                            linhas_palavras_acertadas[acertos].posY1 = mouseClickPositionY_init;
+                            linhas_palavras_acertadas[acertos].posX2 = mouseClickPositionX_end;
+                            linhas_palavras_acertadas[acertos].posY2 = mouseClickPositionY_end;
+
+                            palavras_acertadas[acertos][0] = posicoes_palavras_horizontais[i][0];
+                            palavras_acertadas[acertos][1] = posicoes_palavras_horizontais[i][1];
+                            palavras_acertadas[acertos][2] = posicoes_palavras_horizontais[i][2];
+
+                            acertos++;
+                            mouseClickPositionX_init = NULL;
+                            mouseClickPositionY_init = NULL;
+                            mouseClickPositionX_end = NULL;
+                            mouseClickPositionY_end = NULL;
+                        }
                     }
                 }
             }
