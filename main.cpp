@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <locale.h>
+#include <allegro5/allegro_ttf.h>
 
 #include <allegro5/allegro5.h>           //biblioteca padrao do allegro
 #include <allegro5/allegro_primitives.h> //biblioteca para desenhar formas na tela
@@ -24,7 +25,7 @@ using namespace std;
 
 */
 
-struct Quadrado_letra
+struct Retangulo
 {
     float posX1;
     float posY1;
@@ -63,15 +64,16 @@ int main()
 
     al_init_font_addon();       // inicializa o font addon do allegro (necessario pra escrever na tela)
     al_init_primitives_addon(); // inicilaiza o primitives addon do allegro (necessario pra desenhar na tela)
+    al_init_ttf_addon();
 
     ALLEGRO_COLOR preto = al_map_rgb(0, 0, 0);
     ALLEGRO_COLOR branco = al_map_rgb(255, 255, 255);
 
     al_install_mouse(); // installa o mouse pro allegro
 
-    ALLEGRO_DISPLAY *display = al_create_display(DISP_W, DISP_H); // cria a tela
-    ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();         // cria a fila de eventos
-    ALLEGRO_FONT *font = al_create_builtin_font();                // cria o font
+    ALLEGRO_DISPLAY *display = al_create_display(DISP_W, DISP_H);                                                      // cria a tela
+    ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();                                                              // cria a fila de eventos
+    ALLEGRO_FONT *font = al_load_ttf_font("./Roboto-Bold.ttf", 14, 0); // cria o font
     ALLEGRO_FONT *letras[20][20];
 
     ALLEGRO_MOUSE_STATE estado_mouse;
@@ -82,7 +84,7 @@ int main()
     {
         for (int j = 0; j < 20; j++)
         {
-            letras[i][j] = al_create_builtin_font();
+            letras[i][j] = al_load_ttf_font("./Roboto-Bold.ttf", 12, 0);
         }
     }
     ALLEGRO_TIMER *timer = al_create_timer(1.0 / 60.0); // cria o timer
@@ -96,7 +98,7 @@ int main()
     //  =================================================================================
 
     // struct Circle circle = {DISP_W/2, DISP_H/2, 20};//inicializa um circle (essa variavel representa o circulo desenhado na tela)
-    Quadrado_letra quadrado[20][20];
+    Retangulo quadrado[20][20];
     if (quadrado)
     {
         float x = DISP_W * .3, y = DISP_H * .08;
@@ -113,16 +115,16 @@ int main()
     //                             Organização das palavras
     //  =================================================================================
     string palavras[][10] = {
-        {"arroz", "feijao", "batata", "macarrao", "peixe", "passas", "couve", "strgonof", "salada", "fricasse"},
-        {"adicao", "subtracao", "multiplicacao", "divisao", "potenciacao", "radiciacao", "igualdade", "maior", "menor", "diferente"},
-        {"vermelho", "azul", "amarelo", "verde", "ciano", "magenta", "preto", "branco", "cinza", "marrom"},
-        {"Brasil", "Argentina", "Chile", "Colombia", "Peru", "Equador", "Venezuela", "Bolivia", "Paraguai", "Uruguai"},
-        {"violao", "guitarra", "violino", "violoncelo", "contrabaixo", "harpa", "bandolim", "cavaquinho", "ukulele", "banjo"},
-        {"leao", "tigre", "elefante", "girafa", "rinoceronte", "hipopotamo", "crocodilo", "gorila", "lobo", "urso"},
-        {"medico", "professor", "engenheiro", "advogado", "arquiteto", "contador", "dentista", "psicologo", "jornalista", "estilista"},
-        {"rock", "pop", "jazz", "samba", "rap", "reggae", "eletronica", "classica", "funk", "country"},
-        {"futebol", "basquete", "tenis", "natacao", "volei", "atletismo", "golfe", "handebol", "boxe", "judo"},
-        {"hidrogenio", "oxigenio", "carbono", "nitrogenio", "sodio", "ferro", "calcio", "potassio", "ouro", "prata"}};
+        {"ARROZ", "FEIJAO", "BATATA", "MACARRAO", "PEIXE", "PASSAS", "COUVE", "STRGONOF", "SALADA", "FRICASSE"},
+        {"ADICAO", "SUBTRACAO", "MULTIPLICACAO", "DIVISAO", "POTENCIACAO", "RADICIACAO", "IGUALDADE", "MAIOR", "MENOR", "DIFERENTE"},
+        {"VERMELHO", "AZUL", "AMARELO", "VERDE", "CIANO", "MAGENTA", "PRETO", "BRANCO", "CINZA", "MARROM"},
+        {"BRASIL", "ARGENTINA", "CHILE", "COLOMBIA", "PERU", "EQUADOR", "VENEZUELA", "BOLIVIA", "PARAGUAI", "URUGUAI"},
+        {"VIOLAO", "GUITARRA", "VIOLINO", "VIOLONCELO", "CONTRABAIXO", "HARPA", "BANDOLIM", "CAVAQUINHO", "UKULELE", "BANJO"},
+        {"LEAO", "TIGRE", "ELEFANTE", "GIRAFA", "RINOCERONTE", "HIPOPOTAMO", "CROCODILO", "GORILA", "LOBO", "URSO"},
+        {"MEDICO", "PROFESSOR", "ENGENHEIRO", "ADVOGADO", "ARQUITETO", "CONTADOR", "DENTISTA", "PSICOLOGO", "JORNALISTA", "ESTILISTA"},
+        {"ROCK", "POP", "JAZZ", "SAMBA", "RAP", "REGGAE", "ELETRONICA", "CLASSICA", "FUNK", "COUNTRY"},
+        {"FUTEBOL", "BASQUETE", "TENIS", "NATACAO", "VOLEI", "ATLETISMO", "GOLFE", "HANDEBOL", "BOXE", "JUDO"},
+        {"HIDROGENIO", "OXIGENIO", "CARBONO", "NITROGENIO", "SODIO", "FERRO", "CALCIO", "POTASSIO", "OURO", "PRATA"}};
 
     char matriz[20][20];
 
@@ -142,8 +144,8 @@ int main()
     //  =================================================================================
 
     int acertos = 0, palavras_acertadas[10][3];
-    Quadrado_letra linhas_palavras_acertadas[10];
-    Quadrado_letra recomecar = {DISP_W * 0.87, DISP_H * 0.01, DISP_W * 0.98, DISP_H * 0.04};
+    Retangulo linhas_palavras_acertadas[10];
+    Retangulo recomecar = {DISP_W * 0.87, DISP_H * 0.01, DISP_W * 0.98, DISP_H * 0.04};
     Triangulo retroceder;
     retroceder = {
         DISP_W * 0.03,
@@ -153,7 +155,7 @@ int main()
         DISP_W * 0.02,
         DISP_H * 0.03,
     };
-    Quadrado_letra botoes_menu[3];
+    Retangulo botoes_menu[3];
     botoes_menu[0] = {DISP_W * 0.3, DISP_H * 0.3, DISP_W * 0.7, DISP_H * 0.35};
     botoes_menu[1] = {DISP_W * 0.3, DISP_H * 0.4, DISP_W * 0.7, DISP_H * 0.45};
     botoes_menu[2] = {DISP_W * 0.3, DISP_H * 0.5, DISP_W * 0.7, DISP_H * 0.55};
@@ -458,7 +460,7 @@ int main()
                             {
                                 if (matriz[i][j] == '0')
                                 {
-                                    matriz[i][j] = rand() % 26 + 97;
+                                    matriz[i][j] = rand() % 26 + 65;
                                 }
                             }
                         }
@@ -599,6 +601,7 @@ int main()
                 //  =================================================================================
                 {
                     al_draw_text(font, preto, DISP_W * 0.4, DISP_H * 0.1, -1, "COMO JOGAR");
+                    al_draw_multiline_text(font, preto, DISP_W * 0.2, DISP_H * 0.2, DISP_W * 0.6, al_get_font_line_height(font), ALLEGRO_ALIGN_LEFT, "O caça-palavras é um jogo em que o objetivo é encontrar palavras escondidas em uma matriz de letras. As palavras podem estar dispostas na horizontal e vertical, apenas da esquerda para a direita. Elas não podem se sobrepor e compartilhar letras com outras palavras.\n\nPara jogar, você precisa observar a matriz de letras e procurar por palavras que vão em acordo com o tema na parte superior da tela. Use o mouse para selecionar as palavras que encontrar. É importante avisar que as palavras só serão validadas se selecionadas na ordem correta, ou seja, da esquerda para a direta ou de cima para baixo.\n\nExistem 10 opções de temas, com 10 palavras diferentes em cada, sendo eles:\n\n- COMIDAS\n- OPERAÇÕES MATEMÁTICAS\n- CORES\n- PAÍSES DA AMÉRICA DO SUL\n- INSTRUMENTOS DE CORDA\n- ANIMAIS\n- PROFISSÕES\n- RITMOS MUSICAIS\n- ESPORTES\n- ELEMENTOS QUÍMICOS.\n\nAs posições das palavras nunca se repetem, então não faltará opções para jogar.\n\nDIVIRTA-SE!");
                     al_draw_filled_triangle(retroceder.posX1, retroceder.posY1, retroceder.posX2, retroceder.posY2, retroceder.posX3, retroceder.posY3, preto);
 
                     if (mouseClickPositionX_init > retroceder.posX3 && mouseClickPositionX_init < retroceder.posX1 && mouseClickPositionY_init > retroceder.posY1 && mouseClickPositionY_init < retroceder.posY2)
