@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
+#include <locale.h>
 
 #include <allegro5/allegro5.h>           //biblioteca padrao do allegro
 #include <allegro5/allegro_primitives.h> //biblioteca para desenhar formas na tela
@@ -31,8 +32,20 @@ struct Quadrado_letra
     float posY2;
 };
 
+struct Triangulo
+{
+    float posX1;
+    float posY1;
+    float posX2;
+    float posY2;
+    float posX3;
+    float posY3;
+};
+
 int main()
 {
+    srand(time(NULL));
+    setlocale(LC_ALL, "Portuguese");
     // system("cls");
     //   =================================================================================
     //                                    Eventos Allegro
@@ -51,8 +64,8 @@ int main()
     al_init_font_addon();       // inicializa o font addon do allegro (necessario pra escrever na tela)
     al_init_primitives_addon(); // inicilaiza o primitives addon do allegro (necessario pra desenhar na tela)
 
-    ALLEGRO_COLOR branco = al_map_rgb(255, 255, 255);
     ALLEGRO_COLOR preto = al_map_rgb(0, 0, 0);
+    ALLEGRO_COLOR branco = al_map_rgb(255, 255, 255);
 
     al_install_mouse(); // installa o mouse pro allegro
 
@@ -102,7 +115,7 @@ int main()
     string palavras[][10] = {
         {"arroz", "feijao", "batata", "macarrao", "peixe", "passas", "couve", "strgonof", "salada", "fricasse"},
         {"adicao", "subtracao", "multiplicacao", "divisao", "potenciacao", "radiciacao", "igualdade", "maior", "menor", "diferente"},
-        {"vermelho", "azul", "amarelo", "verde", "ciano", "magenta", "branco", "preto", "cinza", "marrom"},
+        {"vermelho", "azul", "amarelo", "verde", "ciano", "magenta", "preto", "branco", "cinza", "marrom"},
         {"Brasil", "Argentina", "Chile", "Colombia", "Peru", "Equador", "Venezuela", "Bolivia", "Paraguai", "Uruguai"},
         {"violao", "guitarra", "violino", "violoncelo", "contrabaixo", "harpa", "bandolim", "cavaquinho", "ukulele", "banjo"},
         {"leao", "tigre", "elefante", "girafa", "rinoceronte", "hipopotamo", "crocodilo", "gorila", "lobo", "urso"},
@@ -112,107 +125,13 @@ int main()
         {"hidrogenio", "oxigenio", "carbono", "nitrogenio", "sodio", "ferro", "calcio", "potassio", "ouro", "prata"}};
 
     char matriz[20][20];
-    srand(time(NULL));
 
-    int load = 0, tam_total = 0, banco_sorteado = rand() % 10;
+    int load = 0, tam_total = 0;
     char tema[40];
-    switch (banco_sorteado)
-    {
-    case 0:
-    {
-        char temp[] = "Comidas";
-        for (int i = 0; i < sizeof(temp); i++)
-        {
-            tema[i] = temp[i];
-        }
-    }
-    break;
-    case 1:
-    {
-        char temp[] = "Operações Matematicas";
-        for (int i = 0; i < sizeof(temp); i++)
-        {
-            tema[i] = temp[i];
-        }
-    }
-    break;
-    case 2:
-    {
-        char temp[] = "Cores";
-        for (int i = 0; i < sizeof(temp); i++)
-        {
-            tema[i] = temp[i];
-        }
-    }
-    break;
-    case 3:
-    {
-        char temp[] = "Países da América do Sul";
-        for (int i = 0; i < sizeof(temp); i++)
-        {
-            tema[i] = temp[i];
-        }
-    }
-    break;
-    case 4:
-    {
-        char temp[] = "Intrumentos de Corda";
-        for (int i = 0; i < sizeof(temp); i++)
-        {
-            tema[i] = temp[i];
-        }
-    }
-    break;
-    case 5:
-    {
-        char temp[] = "Animais";
-        for (int i = 0; i < sizeof(temp); i++)
-        {
-            tema[i] = temp[i];
-        }
-    }
-    break;
-    case 6:
-    {
-        char temp[] = "Profissões";
-        for (int i = 0; i < sizeof(temp); i++)
-        {
-            tema[i] = temp[i];
-        }
-    }
-    break;
-    case 7:
-    {
-        char temp[] = "Ritmos Musicais";
-        for (int i = 0; i < sizeof(temp); i++)
-        {
-            tema[i] = temp[i];
-        }
-    }
-    break;
-    case 8:
-    {
-        char temp[] = "Esportes";
-        for (int i = 0; i < sizeof(temp); i++)
-        {
-            tema[i] = temp[i];
-        }
-    }
-    break;
-    case 9:
-    {
-        char temp[] = "Elementos Quimicos";
-        for (int i = 0; i < sizeof(temp); i++)
-        {
-            tema[i] = temp[i];
-        }
-    }
-    break;
-    }
 
     for (int i = 0; i < sizeof(palavras) / sizeof(string) * 2; i++)
     {
-        tam_total += palavras[banco_sorteado][i].length();
+        //  tam_total += palavras[banco_sorteado][i].length();
     }
     int posicoes_palavras_verticais[5][3];
     int posicoes_palavras_horizontais[5][3];
@@ -224,7 +143,16 @@ int main()
 
     int acertos = 0, palavras_acertadas[10][3];
     Quadrado_letra linhas_palavras_acertadas[10];
-    Quadrado_letra retroceder;
+    Quadrado_letra recomecar = {DISP_W * 0.87, DISP_H * 0.01, DISP_W * 0.98, DISP_H * 0.04};
+    Triangulo retroceder;
+    retroceder = {
+        DISP_W * 0.03,
+        DISP_H * 0.02,
+        DISP_W * 0.03,
+        DISP_H * 0.04,
+        DISP_W * 0.02,
+        DISP_H * 0.03,
+    };
     Quadrado_letra botoes_menu[3];
     botoes_menu[0] = {DISP_W * 0.3, DISP_H * 0.3, DISP_W * 0.7, DISP_H * 0.35};
     botoes_menu[1] = {DISP_W * 0.3, DISP_H * 0.4, DISP_W * 0.7, DISP_H * 0.45};
@@ -234,6 +162,7 @@ int main()
      * TELA ATUAL = Indica a tela que aparece
      * 0 - Tela inicial (menu)
      * 1 - Tela do caça palavras
+     * 2 - Como jogar
      */
 
     bool click_button_tes = false, pronto_para_jogar = false;
@@ -286,29 +215,46 @@ int main()
 
         if (logic)
         {
+            srand((time(NULL)));
             // DRAW
-
-            //  =======================================================================================================================================================================
+            al_clear_to_color(branco);
+            //  ========================================================================================================================================================================
             //                                                                                   JOGO
             //  ========================================================================================================================================================================
 
             switch (tela_atual)
             {
+
             case 0:
-            {
-                char opcoes_menu[3][11] = {{"Jogar"}, {"Instrucoes"}, {"Sair"}};
-                al_draw_text(font, branco, DISP_W * 0.45, DISP_H * 0.2, 0, "CACA PALAVRAS");
-                for (int i = 0; i < 3; i++)
+                //  =================================================================================
+                //                                      MENU
+                //  =================================================================================
                 {
-                    al_draw_filled_rectangle(botoes_menu[i].posX1, botoes_menu[i].posY1, botoes_menu[i].posX2, botoes_menu[i].posY2, branco);
-                    al_draw_textf(font, preto, botoes_menu[i].posX1 * 1.6, botoes_menu[i].posY1 * 1.05, 0, "%s", opcoes_menu[i]);
+
+                    char opcoes_menu[3][20] = {{"Jogar"}, {"Como jogar"}, {"Sair"}};
+                    al_draw_text(font, preto, DISP_W * 0.45, DISP_H * 0.2, 0, "CAÇA PALAVRAS");
+                    for (int i = 0; i < 3; i++)
+                    {
+                        al_draw_filled_rectangle(botoes_menu[i].posX1, botoes_menu[i].posY1, botoes_menu[i].posX2, botoes_menu[i].posY2, preto);
+                    }
+                    al_draw_textf(font, branco, botoes_menu[0].posX1 * 1.6, botoes_menu[0].posY1 * 1.06, 0, "%s", opcoes_menu[0]);
+                    al_draw_textf(font, branco, botoes_menu[1].posX1 * 1.55, botoes_menu[1].posY1 * 1.05, 0, "%s", opcoes_menu[1]);
+                    al_draw_textf(font, branco, botoes_menu[2].posX1 * 1.61, botoes_menu[2].posY1 * 1.04, 0, "%s", opcoes_menu[2]);
+
+                    if (mouseClickPositionX_init > botoes_menu[0].posX1 && mouseClickPositionX_init < botoes_menu[0].posX2 && mouseClickPositionY_init > botoes_menu[0].posY1 && mouseClickPositionY_init < botoes_menu[0].posY2)
+                    {
+                        tela_atual = 1;
+                    }
+                    else if (mouseClickPositionX_init > botoes_menu[1].posX1 && mouseClickPositionX_init < botoes_menu[1].posX2 && mouseClickPositionY_init > botoes_menu[1].posY1 && mouseClickPositionY_init < botoes_menu[1].posY2)
+                    {
+                        tela_atual = 2;
+                    }
+                    else if (mouseClickPositionX_init > botoes_menu[2].posX1 && mouseClickPositionX_init < botoes_menu[2].posX2 && mouseClickPositionY_init > botoes_menu[2].posY1 && mouseClickPositionY_init < botoes_menu[2].posY2)
+                    {
+                        done = true;
+                    }
                 }
-                if (mouseClickPositionX_init > botoes_menu[0].posX1 && mouseClickPositionX_init < botoes_menu[0].posX2 && mouseClickPositionY_init > botoes_menu[0].posY1 && mouseClickPositionY_init < botoes_menu[0].posY2)
-                {
-                    tela_atual = 1;
-                }
-            }
-            break;
+                break;
             case 1:
 
                 //  =================================================================================
@@ -316,10 +262,106 @@ int main()
                 //  =================================================================================
 
                 {
-                    al_clear_to_color(preto); // limpa a tela a recolorindo toda de preto
+                    al_clear_to_color(branco); // limpa a tela a recolorindo toda de branco
 
                     if (!pronto_para_jogar)
                     {
+
+                        int banco_sorteado = rand() % 10;
+                        switch (banco_sorteado)
+                        {
+                        case 0:
+                        {
+                            char temp[] = "Comidas";
+                            for (int i = 0; i < sizeof(temp); i++)
+                            {
+                                tema[i] = temp[i];
+                            }
+                        }
+                        break;
+                        case 1:
+                        {
+                            char temp[] = "Operações Matematicas";
+                            for (int i = 0; i < sizeof(temp); i++)
+                            {
+                                tema[i] = temp[i];
+                            }
+                        }
+                        break;
+                        case 2:
+                        {
+                            char temp[] = "Cores";
+                            for (int i = 0; i < sizeof(temp); i++)
+                            {
+                                tema[i] = temp[i];
+                            }
+                        }
+                        break;
+                        case 3:
+                        {
+                            char temp[] = "Países da América do Sul";
+                            for (int i = 0; i < sizeof(temp); i++)
+                            {
+                                tema[i] = temp[i];
+                            }
+                        }
+                        break;
+                        case 4:
+                        {
+                            char temp[] = "Intrumentos de Corda";
+                            for (int i = 0; i < sizeof(temp); i++)
+                            {
+                                tema[i] = temp[i];
+                            }
+                        }
+                        break;
+                        case 5:
+                        {
+                            char temp[] = "Animais";
+                            for (int i = 0; i < sizeof(temp); i++)
+                            {
+                                tema[i] = temp[i];
+                            }
+                        }
+                        break;
+                        case 6:
+                        {
+                            char temp[] = "Profissões";
+                            for (int i = 0; i < sizeof(temp); i++)
+                            {
+                                tema[i] = temp[i];
+                            }
+                        }
+                        break;
+                        case 7:
+                        {
+                            char temp[] = "Ritmos Musicais";
+                            for (int i = 0; i < sizeof(temp); i++)
+                            {
+                                tema[i] = temp[i];
+                            }
+                        }
+                        break;
+                        case 8:
+                        {
+                            char temp[] = "Esportes";
+                            for (int i = 0; i < sizeof(temp); i++)
+                            {
+                                tema[i] = temp[i];
+                            }
+                        }
+                        break;
+                        case 9:
+                        {
+                            char temp[] = "Elementos Químicos";
+                            for (int i = 0; i < sizeof(temp); i++)
+                            {
+                                tema[i] = temp[i];
+                            }
+                        }
+                        break;
+                        }
+
                         //  =================================================================================================================================================================================
 
                         for (int i = 0; i < 20; i++)
@@ -337,15 +379,14 @@ int main()
                             load += 10;
                             system("cls");
                             al_flip_display();
-                            al_clear_to_color(preto);
+                            al_clear_to_color(branco);
                             cout << "Carregando " << load << "% ... \n";
-                            al_draw_textf(font, branco, DISP_W * 0.45, DISP_H * 0.5, 0, "Carregando %d%...", load);
+                            al_draw_textf(font, preto, DISP_W * 0.45, DISP_H * 0.5, 0, "Carregando %d % ...", load);
                             string escolhida = palavras[banco_sorteado][i];
                             bool teste_coluna = true;
                             int tam_max = 20 - palavras[banco_sorteado][i].length(), pos_palavra = rand() % tam_max, iteracao_escolhida = 0, pos_coluna;
                             do
                             {
-                                srand((time(NULL)));
                                 teste_coluna = true;
                                 pos_coluna = rand() % 19;
                                 for (int j = pos_palavra; j < pos_palavra + escolhida.length() && teste_coluna == true; j++)
@@ -372,16 +413,15 @@ int main()
                         {
                             load += 10;
                             al_flip_display();
-                            al_clear_to_color(preto);
+                            al_clear_to_color(branco);
                             system("cls");
                             cout << "Carregando " << load << "% ... \n";
-                            al_draw_textf(font, branco, DISP_W * 0.45, DISP_H * 0.5, 0, "Carregando %d %...", load);
+                            al_draw_textf(font, preto, DISP_W * 0.45, DISP_H * 0.5, 0, "Carregando %d  % ...", load);
                             string escolhida = palavras[banco_sorteado][i];
                             bool teste_linha = true;
-                            int tam_max = 20 - palavras[banco_sorteado][i].length(), pos_palavra = rand() % tam_max, iteracao_escolhida = 0, pos_linha;
+                            int tam_max = 20 - palavras[banco_sorteado][i].length(), pos_palavra = rand() % tam_max, iteracao_escolhida = 0, pos_linha, cont_randomizacao = 0;
                             do
                             {
-                                srand((time(NULL)));
                                 teste_linha = true;
                                 pos_linha = rand() % 19;
                                 for (int j = pos_palavra; j < pos_palavra + escolhida.length() && teste_linha == true; j++)
@@ -389,6 +429,13 @@ int main()
                                     if (matriz[pos_linha][j] != '0')
                                     {
                                         teste_linha = false;
+                                        cont_randomizacao++;
+                                    }
+                                    if (cont_randomizacao >= 10)
+                                    {
+                                        srand(time(NULL));
+                                        cont_randomizacao = 0;
+                                        pos_palavra++;
                                     }
                                 }
                             } while (!teste_linha && i > 0);
@@ -411,27 +458,23 @@ int main()
                             {
                                 if (matriz[i][j] == '0')
                                 {
-                                    // matriz[i][j] = rand() % 26 + 97;
+                                    matriz[i][j] = rand() % 26 + 97;
                                 }
-                                else
-                                {
-                                    // posicoes_palavras_verticais[iteracao_palavras_escolhidas][0] = i;
-                                    // posicoes_palavras_verticais[iteracao_palavras_escolhidas][1] = j;
-                                    // iteracao_palavras_escolhidas--;
-                                }
-                                // printf("%c ", matriz[i][j]);
                             }
                         }
                         pronto_para_jogar = true;
                     }
-                    al_clear_to_color(preto); // limpa a tela a recolorindo toda de preto
+                    al_clear_to_color(branco); // limpa a tela a recolorindo toda de branco
                     bool palavra_repetida = false;
 
-                    al_draw_textf(font, branco, DISP_W * 0.35, DISP_H * 0.01, 0, "CACA PALAVRAS - TEMA: %s - ACERTOS: %d", tema, acertos);
+                    al_draw_textf(font, preto, DISP_W * 0.35, DISP_H * 0.01, 0, "CAÇA PALAVRAS - TEMA: %s - ACERTOS: %d", tema, acertos);
                     if (click_button_tes)
                     {
-                        al_draw_pixel(mouseClickPositionX_init, mouseClickPositionY_init, branco);
-                        al_draw_line(mouseClickPositionX_init, mouseClickPositionY_init, mouseClickPositionX_end, mouseClickPositionY_end, branco, 5);
+                        al_draw_pixel(mouseClickPositionX_init, mouseClickPositionY_init, preto);
+                        if (mouseClickPositionX_init != NULL && mouseClickPositionX_end != NULL)
+                        {
+                            al_draw_line(mouseClickPositionX_init, mouseClickPositionY_init, mouseClickPositionX_end, mouseClickPositionY_end, preto, 5);
+                        }
                     }
 
                     for (int i = 0; i < 20; i++)
@@ -439,15 +482,15 @@ int main()
                         for (int j = 0; j < 20; j++)
                         {
                             float posX_letra = (quadrado[i][j].posX2 - quadrado[i][j].posX1) / 2, posY_letra = (quadrado[i][j].posY2 - quadrado[i][j].posY1) / 2;
-                            al_draw_rectangle(quadrado[i][j].posX1, quadrado[i][j].posY1, quadrado[i][j].posX2, quadrado[i][j].posY2, al_map_rgb(255, 255, 255), 1);
-                            al_draw_textf(letras[i][j], al_map_rgb(255, 0, 0), quadrado[i][j].posX1 + DISP_W * 0.01, quadrado[i][j].posY1 + DISP_H * 0.01, 0, "%c", matriz[i][j]);
+                            al_draw_rectangle(quadrado[i][j].posX1, quadrado[i][j].posY1, quadrado[i][j].posX2, quadrado[i][j].posY2, al_map_rgb(0, 0, 0), 1);
+                            al_draw_textf(letras[i][j], preto, quadrado[i][j].posX1 + DISP_W * 0.01, quadrado[i][j].posY1 + DISP_H * 0.01, 0, "%c", matriz[i][j]);
                         }
                     }
 
                     for (int index = 0; index < acertos; index++)
                     {
-                        al_draw_pixel(linhas_palavras_acertadas[index].posX1, linhas_palavras_acertadas[index].posY1, branco);
-                        al_draw_line(linhas_palavras_acertadas[index].posX1, linhas_palavras_acertadas[index].posY1, linhas_palavras_acertadas[index].posX2, linhas_palavras_acertadas[index].posY2, branco, 5);
+                        al_draw_pixel(linhas_palavras_acertadas[index].posX1, linhas_palavras_acertadas[index].posY1, preto);
+                        al_draw_line(linhas_palavras_acertadas[index].posX1, linhas_palavras_acertadas[index].posY1, linhas_palavras_acertadas[index].posX2, linhas_palavras_acertadas[index].posY2, preto, 5);
                     }
 
                     for (int i = 0; i < 5; i++)
@@ -526,7 +569,23 @@ int main()
                             }
                         }
                     }
+                    al_draw_filled_triangle(retroceder.posX1, retroceder.posY1, retroceder.posX2, retroceder.posY2, retroceder.posX3, retroceder.posY3, preto);
+                    if (mouseClickPositionX_init > retroceder.posX3 && mouseClickPositionX_init < retroceder.posX1 && mouseClickPositionY_init > retroceder.posY1 && mouseClickPositionY_init < retroceder.posY2)
+                    {
+                        tela_atual = 0;
+                    }
+                    al_draw_filled_rounded_rectangle(recomecar.posX1, recomecar.posY1, recomecar.posX2, recomecar.posY2, 1, 1, preto);
+                    al_draw_textf(font, branco, recomecar.posX1 + recomecar.posX1 * 0.03, recomecar.posY1 + recomecar.posY1 * 0.7, 0, "Recomeçar");
+                    if (mouseClickPositionX_init > recomecar.posX1 && mouseClickPositionX_init < recomecar.posX2 && mouseClickPositionY_init > recomecar.posY1 && mouseClickPositionY_init < recomecar.posY2)
+                    {
 
+                        pronto_para_jogar = false;
+                        load = 0;
+                        mouseClickPositionX_end = NULL;
+                        mouseClickPositionY_end = NULL;
+                        mouseClickPositionX_init = NULL;
+                        mouseClickPositionY_init = NULL;
+                    }
                     if (acertos >= 10)
                     {
                         done = true;
@@ -534,7 +593,22 @@ int main()
                 }
 
                 break;
+            case 2:
+                //  =================================================================================
+                //                                  Instruções
+                //  =================================================================================
+                {
+                    al_draw_text(font, preto, DISP_W * 0.4, DISP_H * 0.1, -1, "COMO JOGAR");
+                    al_draw_filled_triangle(retroceder.posX1, retroceder.posY1, retroceder.posX2, retroceder.posY2, retroceder.posX3, retroceder.posY3, preto);
+
+                    if (mouseClickPositionX_init > retroceder.posX3 && mouseClickPositionX_init < retroceder.posX1 && mouseClickPositionY_init > retroceder.posY1 && mouseClickPositionY_init < retroceder.posY2)
+                    {
+                        tela_atual = 0;
+                    }
+                }
+                break;
             default:
+                done = true;
                 break;
             }
             al_flip_display();
@@ -542,9 +616,9 @@ int main()
         }
     }
 
-    //  =================================================================================
-    //                         Encerramento do que foi criado
-    //  =================================================================================
+    //  ===========================================================================================================================================================================
+    //                                                                  Encerramento do que foi criado
+    //  ===========================================================================================================================================================================
 
     al_destroy_display(display);
     al_destroy_event_queue(queue);
