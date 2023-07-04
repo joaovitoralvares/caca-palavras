@@ -121,7 +121,7 @@ int main()
     //                             Organização das palavras
     //  =================================================================================
     string palavras[][10] = {
-        {"ARROZ", "FEIJAO", "BATATA", "MACARRAO", "PEIXE", "PASSAS", "COUVE", "STRGONOF", "SALADA", "FRICASSE"},
+        {"ARROZ", "FEIJAO", "BATATA", "MACARRAO", "PEIXE", "PASSAS", "COUVE", "STROGONOF", "SALADA", "FRICASSE"},
         {"ADICAO", "SUBTRACAO", "MULTIPLICACAO", "DIVISAO", "POTENCIACAO", "RADICIACAO", "IGUALDADE", "MAIOR", "MENOR", "DIFERENTE"},
         {"VERMELHO", "AZUL", "AMARELO", "VERDE", "CIANO", "MAGENTA", "PRETO", "BRANCO", "CINZA", "MARROM"},
         {"BRASIL", "ARGENTINA", "CHILE", "COLOMBIA", "PERU", "EQUADOR", "VENEZUELA", "BOLIVIA", "PARAGUAI", "URUGUAI"},
@@ -325,11 +325,11 @@ int main()
 
                 {
                     al_clear_to_color(branco); // limpa a tela a recolorindo toda de branco
-
+                    int banco_sorteado = 0;
                     if (!pronto_para_jogar)
                     {
 
-                        int banco_sorteado = rand() % 10;
+                        banco_sorteado = rand() % 10;
                         switch (banco_sorteado)
                         {
                         case 0:
@@ -554,6 +554,13 @@ int main()
                         al_draw_pixel(linhas_palavras_acertadas[index].posX1, linhas_palavras_acertadas[index].posY1, preto);
                         al_draw_line(linhas_palavras_acertadas[index].posX1, linhas_palavras_acertadas[index].posY1, linhas_palavras_acertadas[index].posX2, linhas_palavras_acertadas[index].posY2, preto, 5);
                     }
+                    string palavras_escolhidas = "PALAVRAS:\n\n";
+                      for (int i = 0; i < 10; i++)
+                    {
+                        palavras_escolhidas += palavras[banco_sorteado][i] + "\n";
+                    }
+                     al_draw_multiline_text(font, vermelho, DISP_W * 0.1, DISP_H * 0.2, DISP_W * 0.6, al_get_font_line_height(font), ALLEGRO_ALIGN_LEFT, palavras_escolhidas.c_str());
+
 
                     for (int i = 0; i < 5; i++)
                     {
@@ -657,7 +664,7 @@ int main()
                     }
                     if (acertos >= 10)
                     {
-                        done = true;
+                        tela_atual = 3;
                     }
                 }
 
@@ -668,7 +675,7 @@ int main()
                 //  =================================================================================
                 {
                     al_draw_text(font, preto, DISP_W * 0.4, DISP_H * 0.1, -1, "COMO JOGAR");
-                    al_draw_multiline_text(font, preto, DISP_W * 0.2, DISP_H * 0.2, DISP_W * 0.6, al_get_font_line_height(font), ALLEGRO_ALIGN_LEFT, "O caça-palavras é um jogo em que o objetivo é encontrar palavras escondidas em uma matriz de letras. As palavras podem estar dispostas na horizontal e vertical, apenas da esquerda para a direita. Elas não podem se sobrepor e compartilhar letras com outras palavras.\n\nPara jogar, você precisa observar a matriz de letras e procurar por palavras que vão em acordo com o tema na parte superior da tela. Use o mouse para selecionar as palavras que encontrar. É importante avisar que as palavras só serão validadas se selecionadas na ordem correta, ou seja, da esquerda para a direta ou de cima para baixo.\n\nExistem 10 opções de temas, com 10 palavras diferentes em cada, sendo eles:\n\n- COMIDAS\n- OPERAÇÕES MATEMÁTICAS\n- CORES\n- PAÍSES DA AMÉRICA DO SUL\n- INSTRUMENTOS DE CORDA\n- ANIMAIS\n- PROFISSÕES\n- RITMOS MUSICAIS\n- ESPORTES\n- ELEMENTOS QUÍMICOS.\n\nAs posições das palavras nunca se repetem, então não faltará opções para jogar.\n\nDIVIRTA-SE!");
+                    al_draw_multiline_text(font, preto, DISP_W * 0.3, DISP_H * 0.4, DISP_W * 0.6, al_get_font_line_height(font), ALLEGRO_ALIGN_LEFT, "O caça-palavras é um jogo em que o objetivo é encontrar palavras escondidas em uma matriz de letras. As palavras podem estar dispostas na horizontal e vertical, apenas da esquerda para a direita. Elas não podem se sobrepor e compartilhar letras com outras palavras.\n\nPara jogar, você precisa observar a matriz de letras e procurar por palavras que vão em acordo com o tema na parte superior da tela. Use o mouse para selecionar as palavras que encontrar. É importante avisar que as palavras só serão validadas se selecionadas na ordem correta, ou seja, da esquerda para a direta ou de cima para baixo.\n\nExistem 10 opções de temas, com 10 palavras diferentes em cada, sendo eles:\n\n- COMIDAS\n- OPERAÇÕES MATEMÁTICAS\n- CORES\n- PAÍSES DA AMÉRICA DO SUL\n- INSTRUMENTOS DE CORDA\n- ANIMAIS\n- PROFISSÕES\n- RITMOS MUSICAIS\n- ESPORTES\n- ELEMENTOS QUÍMICOS.\n\nAs posições das palavras nunca se repetem, então não faltará opções para jogar.\n\nDIVIRTA-SE!");
                     al_draw_filled_triangle(retroceder.posX1, retroceder.posY1, retroceder.posX2, retroceder.posY2, retroceder.posX3, retroceder.posY3, preto);
 
                     if (mouseClickPositionX_init > retroceder.posX3 && mouseClickPositionX_init < retroceder.posX1 && mouseClickPositionY_init > retroceder.posY1 && mouseClickPositionY_init < retroceder.posY2)
@@ -680,6 +687,55 @@ int main()
                         mouseClickPositionY_end = NULL;
                     }
                 }
+                break;
+
+            case 3:
+                al_draw_textf(font, preto, DISP_W * 0.35, DISP_H * 0.01, 0, "CAÇA PALAVRAS - TEMA: %s - ACERTOS: %d", tema, acertos);
+                al_draw_filled_rounded_rectangle(recomecar.posX1, recomecar.posY1, recomecar.posX2, recomecar.posY2, 1, 1, preto);
+                al_draw_textf(font, branco, recomecar.posX1 + recomecar.posX1 * 0.03, recomecar.posY1 + recomecar.posY1 * 0.7, 0, "Recomeçar");
+                if (mouseClickPositionX_init > recomecar.posX1 && mouseClickPositionX_init < recomecar.posX2 && mouseClickPositionY_init > recomecar.posY1 && mouseClickPositionY_init < recomecar.posY2)
+                {
+
+                    pronto_para_jogar = false;
+                    load = 0;
+                    mouseClickPositionX_end = NULL;
+                    mouseClickPositionY_end = NULL;
+                    mouseClickPositionX_init = NULL;
+                    mouseClickPositionY_init = NULL;
+
+                    acertos = 0;
+
+                    for (int i = 0; i < 10; i++)
+                    {
+                        linhas_palavras_acertadas[i] = Retangulo();
+                    }
+                    tela_atual = 1;
+                }
+                al_draw_multiline_text(font, preto, DISP_W * 0.2, DISP_H * 0.2, DISP_W * 0.6, al_get_font_line_height(font), ALLEGRO_ALIGN_LEFT, "Parabéns, voce ganhou!\n Clique em recomeçar para continuar jogando ou aperte a tecla R.");
+                al_draw_filled_triangle(retroceder.posX1, retroceder.posY1, retroceder.posX2, retroceder.posY2, retroceder.posX3, retroceder.posY3, preto);
+                if (mouseClickPositionX_init > retroceder.posX3 && mouseClickPositionX_init < retroceder.posX1 && mouseClickPositionY_init > retroceder.posY1 && mouseClickPositionY_init < retroceder.posY2)
+                {
+                    tela_atual = 0;
+                }
+
+                if (tecla_pressionada == ALLEGRO_KEY_R)
+                {
+                    pronto_para_jogar = false;
+                    load = 0;
+                    mouseClickPositionX_end = NULL;
+                    mouseClickPositionY_end = NULL;
+                    mouseClickPositionX_init = NULL;
+                    mouseClickPositionY_init = NULL;
+
+                    acertos = 0;
+
+                    for (int i = 0; i < 10; i++)
+                    {
+                        linhas_palavras_acertadas[i] = Retangulo();
+                    }
+                    tela_atual = 1;
+                }
+
                 break;
             default:
                 done = true;
