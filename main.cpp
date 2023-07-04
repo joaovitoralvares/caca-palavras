@@ -252,13 +252,15 @@ int main()
                     al_draw_text(font, preto, DISP_W * 0.45, DISP_H * 0.2, 0, "CAÇA PALAVRAS");
                     for (int i = 0; i < 3; i++)
                     {
-                        if ( i == opcao_selecionada - 1) {
+                        if (i == opcao_selecionada - 1)
+                        {
                             cout << "SELECIONADO" << opcao_selecionada << endl;
                             al_draw_filled_rectangle(botoes_menu[i].posX1, botoes_menu[i].posY1, botoes_menu[i].posX2, botoes_menu[i].posY2, vermelho);
-                        } else {
+                        }
+                        else
+                        {
                             al_draw_filled_rectangle(botoes_menu[i].posX1, botoes_menu[i].posY1, botoes_menu[i].posX2, botoes_menu[i].posY2, preto);
                         }
-                        
                     }
                     al_draw_textf(font, branco, botoes_menu[0].posX1 * 1.6, botoes_menu[0].posY1 * 1.06, 0, "%s", opcoes_menu[0]);
                     al_draw_textf(font, branco, botoes_menu[1].posX1 * 1.55, botoes_menu[1].posY1 * 1.05, 0, "%s", opcoes_menu[1]);
@@ -645,6 +647,13 @@ int main()
                         mouseClickPositionY_end = NULL;
                         mouseClickPositionX_init = NULL;
                         mouseClickPositionY_init = NULL;
+
+                        acertos = 0;
+
+                        for (int i = 0; i < 10; i++)
+                        {
+                            linhas_palavras_acertadas[i] = Retangulo();
+                        }
                     }
                     if (acertos >= 10)
                     {
@@ -665,6 +674,10 @@ int main()
                     if (mouseClickPositionX_init > retroceder.posX3 && mouseClickPositionX_init < retroceder.posX1 && mouseClickPositionY_init > retroceder.posY1 && mouseClickPositionY_init < retroceder.posY2)
                     {
                         tela_atual = 0;
+                        mouseClickPositionX_init = NULL;
+                        mouseClickPositionY_init = NULL;
+                        mouseClickPositionX_end = NULL;
+                        mouseClickPositionY_end = NULL;
                     }
                 }
                 break;
