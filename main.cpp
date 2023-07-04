@@ -7,8 +7,10 @@
 #include <allegro5/allegro5.h>           //biblioteca padrao do allegro
 #include <allegro5/allegro_primitives.h> //biblioteca para desenhar formas na tela
 #include <allegro5/allegro_font.h>       //biblioteca pra escrever na tela
-#define DISP_W 1200                      // largura da tela
-#define DISP_H 700                       // altura da tela
+#include <allegro5/allegro_native_dialog.h>
+#include <allegro5/keyboard.h>
+#define DISP_W 1200 // largura da tela
+#define DISP_H 700  // altura da tela
 
 using namespace std;
 
@@ -59,6 +61,7 @@ int main()
     int mouseClickPositionY_init = 0; // posicao y inicial do mouse quando clicar
     int mouseClickPositionX_end = 0;  // posicao x final do mouse quando clicar
     int mouseClickPositionY_end = 0;  // posicao y final do mouse quando clicar
+    int tecla_pressionada = 0;
 
     al_init(); // inicializa o allegro
 
@@ -68,11 +71,13 @@ int main()
 
     ALLEGRO_COLOR preto = al_map_rgb(0, 0, 0);
     ALLEGRO_COLOR branco = al_map_rgb(255, 255, 255);
+    ALLEGRO_COLOR vermelho = al_map_rgb(255, 0, 0);
 
-    al_install_mouse(); // installa o mouse pro allegro
+    al_install_mouse();    // installa o mouse pro allegro
+    al_install_keyboard(); // instala o teclado para o allegro
 
-    ALLEGRO_DISPLAY *display = al_create_display(DISP_W, DISP_H);                                                      // cria a tela
-    ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();                                                              // cria a fila de eventos
+    ALLEGRO_DISPLAY *display = al_create_display(DISP_W, DISP_H);      // cria a tela
+    ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();              // cria a fila de eventos
     ALLEGRO_FONT *font = al_load_ttf_font("./Roboto-Bold.ttf", 14, 0); // cria o font
     ALLEGRO_FONT *letras[20][20];
 
@@ -92,6 +97,7 @@ int main()
     al_register_event_source(queue, al_get_display_event_source(display)); // registra os eventos do display na fila
     al_register_event_source(queue, al_get_timer_event_source(timer));     // registra os eventos do timer na fila
     al_register_event_source(queue, al_get_mouse_event_source());          // registra os eventos do mouse na fila
+    al_register_event_source(queue, al_get_keyboard_event_source());       // registra os eventos do teclado na fila
 
     //  =================================================================================
     //                             Criação Espaço das letras
@@ -167,6 +173,8 @@ int main()
      * 2 - Como jogar
      */
 
+    int opcao_selecionada = 1;
+
     bool click_button_tes = false, pronto_para_jogar = false;
     al_start_timer(timer); // inicializa o timer
     // enquanto a aplicacao nao fechar faca
@@ -210,6 +218,9 @@ int main()
             }
 
             break;
+        case ALLEGRO_EVENT_KEY_DOWN:
+            tecla_pressionada = event.keyboard.keycode;
+            break;
         }
         //  =================================================================================
         //                                 Eventos na tela
@@ -224,6 +235,11 @@ int main()
             //                                                                                   JOGO
             //  ========================================================================================================================================================================
 
+            if (tecla_pressionada == ALLEGRO_KEY_ESCAPE)
+            {
+                tela_atual = 0;
+            }
+
             switch (tela_atual)
             {
 
@@ -232,12 +248,17 @@ int main()
                 //                                      MENU
                 //  =================================================================================
                 {
-
                     char opcoes_menu[3][20] = {{"Jogar"}, {"Como jogar"}, {"Sair"}};
                     al_draw_text(font, preto, DISP_W * 0.45, DISP_H * 0.2, 0, "CAÇA PALAVRAS");
                     for (int i = 0; i < 3; i++)
                     {
-                        al_draw_filled_rectangle(botoes_menu[i].posX1, botoes_menu[i].posY1, botoes_menu[i].posX2, botoes_menu[i].posY2, preto);
+                        if ( i == opcao_selecionada - 1) {
+                            cout << "SELECIONADO" << opcao_selecionada << endl;
+                            al_draw_filled_rectangle(botoes_menu[i].posX1, botoes_menu[i].posY1, botoes_menu[i].posX2, botoes_menu[i].posY2, vermelho);
+                        } else {
+                            al_draw_filled_rectangle(botoes_menu[i].posX1, botoes_menu[i].posY1, botoes_menu[i].posX2, botoes_menu[i].posY2, preto);
+                        }
+                        
                     }
                     al_draw_textf(font, branco, botoes_menu[0].posX1 * 1.6, botoes_menu[0].posY1 * 1.06, 0, "%s", opcoes_menu[0]);
                     al_draw_textf(font, branco, botoes_menu[1].posX1 * 1.55, botoes_menu[1].posY1 * 1.05, 0, "%s", opcoes_menu[1]);
@@ -254,6 +275,43 @@ int main()
                     else if (mouseClickPositionX_init > botoes_menu[2].posX1 && mouseClickPositionX_init < botoes_menu[2].posX2 && mouseClickPositionY_init > botoes_menu[2].posY1 && mouseClickPositionY_init < botoes_menu[2].posY2)
                     {
                         done = true;
+                    }
+
+                    if (tecla_pressionada == ALLEGRO_KEY_UP)
+                    {
+                        opcao_selecionada--; // navegar para a opção acima
+                        if (opcao_selecionada < 1)
+                        {
+                            opcao_selecionada = 3;
+                        }
+                        cout << "CIMA " << opcao_selecionada << endl;
+                    }
+                    else if (tecla_pressionada == ALLEGRO_KEY_DOWN)
+                    {
+
+                        opcao_selecionada++; // navegar para a opção abaixo
+                        if (opcao_selecionada > 3)
+                        {
+                            opcao_selecionada = 1;
+                        }
+                        cout << "BAIXO " << opcao_selecionada << endl;
+                    }
+                    else if (tecla_pressionada == ALLEGRO_KEY_ENTER && tela_atual == 0)
+                    {
+                        cout << "ENTER" << opcao_selecionada << endl;
+                        // Executar a ação correspondente à opção selecionada
+                        if (opcao_selecionada == 1)
+                        {
+                            tela_atual = 1;
+                        }
+                        else if (opcao_selecionada == 2)
+                        {
+                            tela_atual = 2;
+                        }
+                        else if (opcao_selecionada == 3)
+                        {
+                            done = true;
+                        }
                     }
                 }
                 break;
@@ -616,6 +674,7 @@ int main()
             }
             al_flip_display();
             logic = false;
+            tecla_pressionada = 0;
         }
     }
 
