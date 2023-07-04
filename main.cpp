@@ -14,19 +14,6 @@
 
 using namespace std;
 
-/**
- Comandos para compilar no VS Code
-
- g++ -I C:\allegro\include -c main.cpp
- g++.exe -I C:\allegro\include main.o -o Jogo.exe liballegro_monolith.dll.a
- .\Jogo.exe
-
- cls
-
-
-
-*/
-
 struct Retangulo
 {
     float posX1;
@@ -76,9 +63,10 @@ int main()
     al_install_mouse();    // installa o mouse pro allegro
     al_install_keyboard(); // instala o teclado para o allegro
 
-    ALLEGRO_DISPLAY *display = al_create_display(DISP_W, DISP_H);      // cria a tela
-    ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();              // cria a fila de eventos
-    ALLEGRO_FONT *font = al_load_ttf_font("./Roboto-Bold.ttf", 14, 0); // cria o font
+    ALLEGRO_DISPLAY *display = al_create_display(DISP_W, DISP_H);          // cria a tela
+    ALLEGRO_EVENT_QUEUE *queue = al_create_event_queue();                  // cria a fila de eventos
+    ALLEGRO_FONT *font = al_load_ttf_font(".\\Roboto-Bold.ttf", 14, 0);    // cria o font
+    ALLEGRO_FONT *titulos = al_load_ttf_font(".\\Roboto-Bold.ttf", 20, 0); // cria o font
     ALLEGRO_FONT *letras[20][20];
 
     ALLEGRO_MOUSE_STATE estado_mouse;
@@ -89,7 +77,7 @@ int main()
     {
         for (int j = 0; j < 20; j++)
         {
-            letras[i][j] = al_load_ttf_font("./Roboto-Bold.ttf", 12, 0);
+            letras[i][j] = al_load_ttf_font(".\\Roboto-Bold.ttf", 12, 0);
         }
     }
     ALLEGRO_TIMER *timer = al_create_timer(1.0 / 60.0); // cria o timer
@@ -102,8 +90,6 @@ int main()
     //  =================================================================================
     //                             Criação Espaço das letras
     //  =================================================================================
-
-    // struct Circle circle = {DISP_W/2, DISP_H/2, 20};//inicializa um circle (essa variavel representa o circulo desenhado na tela)
     Retangulo quadrado[20][20];
     if (quadrado)
     {
@@ -117,11 +103,11 @@ int main()
             }
         }
     }
-    //  =================================================================================
-    //                             Organização das palavras
-    //  =================================================================================
+    //  ====================================================================================================================================================================================
+    //                                                                              ORGANIZAÇÃO DAS PALAVRAS
+    //  ====================================================================================================================================================================================
     string palavras[][10] = {
-        {"ARROZ", "FEIJAO", "BATATA", "MACARRAO", "PEIXE", "PASSAS", "COUVE", "STROGONOF", "SALADA", "FRICASSE"},
+        {"ARROZ", "FEIJAO", "BATATA", "MACARRAO", "PEIXE", "QUEIJO", "TROPEIRO", "STROGONOF", "JILO", "FRICASSE"},
         {"ADICAO", "SUBTRACAO", "MULTIPLICACAO", "DIVISAO", "POTENCIACAO", "RADICIACAO", "IGUALDADE", "MAIOR", "MENOR", "DIFERENTE"},
         {"VERMELHO", "AZUL", "AMARELO", "VERDE", "CIANO", "MAGENTA", "PRETO", "BRANCO", "CINZA", "MARROM"},
         {"BRASIL", "ARGENTINA", "CHILE", "COLOMBIA", "PERU", "EQUADOR", "VENEZUELA", "BOLIVIA", "PARAGUAI", "URUGUAI"},
@@ -137,23 +123,17 @@ int main()
     int load = 0, tam_total = 0;
     char tema[40];
 
-    for (int i = 0; i < sizeof(palavras) / sizeof(string) * 2; i++)
-    {
-        //  tam_total += palavras[banco_sorteado][i].length();
-    }
     int posicoes_palavras_verticais[5][3];
     int posicoes_palavras_horizontais[5][3];
-    int iteracao_palavras_escolhidas = tam_total - 1;
 
-    //  =================================================================================
-    //                                 Fila de Eventos
-    //  =================================================================================
+    //  ====================================================================================================================================================================================
+    //                                                                                   FILA DE EVENTOS
+    //  ====================================================================================================================================================================================
 
     int acertos = 0, palavras_acertadas[10][3];
     Retangulo linhas_palavras_acertadas[10];
     Retangulo recomecar = {DISP_W * 0.87, DISP_H * 0.01, DISP_W * 0.98, DISP_H * 0.04};
-    Triangulo retroceder;
-    retroceder = {
+    Triangulo retroceder = {
         DISP_W * 0.03,
         DISP_H * 0.02,
         DISP_W * 0.03,
@@ -161,23 +141,33 @@ int main()
         DISP_W * 0.02,
         DISP_H * 0.03,
     };
-    Retangulo botoes_menu[3];
-    botoes_menu[0] = {DISP_W * 0.3, DISP_H * 0.3, DISP_W * 0.7, DISP_H * 0.35};
-    botoes_menu[1] = {DISP_W * 0.3, DISP_H * 0.4, DISP_W * 0.7, DISP_H * 0.45};
-    botoes_menu[2] = {DISP_W * 0.3, DISP_H * 0.5, DISP_W * 0.7, DISP_H * 0.55};
+    Retangulo botoes_menu[3] = {{DISP_W * 0.3, DISP_H * 0.3, DISP_W * 0.7, DISP_H * 0.35}, {DISP_W * 0.3, DISP_H * 0.4, DISP_W * 0.7, DISP_H * 0.45}, {DISP_W * 0.3, DISP_H * 0.5, DISP_W * 0.7, DISP_H * 0.55}};
+    
     int tela_atual = 0;
     /**
      * TELA ATUAL = Indica a tela que aparece
      * 0 - Tela inicial (menu)
      * 1 - Tela do caça palavras
      * 2 - Como jogar
+     * 3 - Tela final
      */
 
-    int opcao_selecionada = 1;
+    int opcao_selecionada = 0;
 
-    bool click_button_tes = false, pronto_para_jogar = false;
+    bool click_button_tes = false, pronto_para_jogar = false, verifica_acerto[] = {
+                                                                  false,
+                                                                  false,
+                                                                  false,
+                                                                  false,
+                                                                  false,
+                                                                  false,
+                                                                  false,
+                                                                  false,
+                                                                  false,
+                                                                  false,
+                                                              };
     al_start_timer(timer); // inicializa o timer
-    // enquanto a aplicacao nao fechar faca
+    
     while (!done)
     {
 
@@ -202,8 +192,6 @@ int main()
             {
                 mouseClickPositionX_init = event.mouse.x;
                 mouseClickPositionY_init = event.mouse.y;
-                // mouseClickPositionX = estado_mouse.x;
-                // mouseClickPositionY = estado_mouse.y;
                 click_button_tes = false;
             }
             break;
@@ -212,11 +200,8 @@ int main()
             {
                 mouseClickPositionX_end = event.mouse.x;
                 mouseClickPositionY_end = event.mouse.y;
-                // mouseClickPositionX = estado_mouse.x;
-                // mouseClickPositionY = estado_mouse.y;
                 click_button_tes = true;
             }
-
             break;
         case ALLEGRO_EVENT_KEY_DOWN:
             tecla_pressionada = event.keyboard.keycode;
@@ -237,7 +222,14 @@ int main()
 
             if (tecla_pressionada == ALLEGRO_KEY_ESCAPE)
             {
-                tela_atual = 0;
+                if (tela_atual != 0)
+                {
+                    tela_atual = 0;
+                }
+                else
+                {
+                    done = true;
+                }
             }
 
             switch (tela_atual)
@@ -248,13 +240,14 @@ int main()
                 //                                      MENU
                 //  =================================================================================
                 {
+
                     char opcoes_menu[3][20] = {{"Jogar"}, {"Como jogar"}, {"Sair"}};
-                    al_draw_text(font, preto, DISP_W * 0.45, DISP_H * 0.2, 0, "CAÇA PALAVRAS");
+                    al_draw_text(titulos, preto, DISP_W * 0.435, DISP_H * 0.2, 0, "CAÇA PALAVRAS");
                     for (int i = 0; i < 3; i++)
                     {
                         if (i == opcao_selecionada - 1)
                         {
-                            cout << "SELECIONADO" << opcao_selecionada << endl;
+
                             al_draw_filled_rectangle(botoes_menu[i].posX1, botoes_menu[i].posY1, botoes_menu[i].posX2, botoes_menu[i].posY2, vermelho);
                         }
                         else
@@ -262,9 +255,9 @@ int main()
                             al_draw_filled_rectangle(botoes_menu[i].posX1, botoes_menu[i].posY1, botoes_menu[i].posX2, botoes_menu[i].posY2, preto);
                         }
                     }
-                    al_draw_textf(font, branco, botoes_menu[0].posX1 * 1.6, botoes_menu[0].posY1 * 1.06, 0, "%s", opcoes_menu[0]);
-                    al_draw_textf(font, branco, botoes_menu[1].posX1 * 1.55, botoes_menu[1].posY1 * 1.05, 0, "%s", opcoes_menu[1]);
-                    al_draw_textf(font, branco, botoes_menu[2].posX1 * 1.61, botoes_menu[2].posY1 * 1.04, 0, "%s", opcoes_menu[2]);
+                    al_draw_textf(font, branco, botoes_menu[0].posX1 * 1.65, botoes_menu[0].posY1 * 1.05, ALLEGRO_ALIGN_CENTRE, "%s", opcoes_menu[0]);
+                    al_draw_textf(font, branco, botoes_menu[1].posX1 * 1.65, botoes_menu[1].posY1 * 1.04, ALLEGRO_ALIGN_CENTRE, "%s", opcoes_menu[1]);
+                    al_draw_textf(font, branco, botoes_menu[2].posX1 * 1.65, botoes_menu[2].posY1 * 1.03, ALLEGRO_ALIGN_CENTRE, "%s", opcoes_menu[2]);
 
                     if (mouseClickPositionX_init > botoes_menu[0].posX1 && mouseClickPositionX_init < botoes_menu[0].posX2 && mouseClickPositionY_init > botoes_menu[0].posY1 && mouseClickPositionY_init < botoes_menu[0].posY2)
                     {
@@ -286,7 +279,6 @@ int main()
                         {
                             opcao_selecionada = 3;
                         }
-                        cout << "CIMA " << opcao_selecionada << endl;
                     }
                     else if (tecla_pressionada == ALLEGRO_KEY_DOWN)
                     {
@@ -296,11 +288,10 @@ int main()
                         {
                             opcao_selecionada = 1;
                         }
-                        cout << "BAIXO " << opcao_selecionada << endl;
                     }
                     else if (tecla_pressionada == ALLEGRO_KEY_ENTER && tela_atual == 0)
                     {
-                        cout << "ENTER" << opcao_selecionada << endl;
+
                         // Executar a ação correspondente à opção selecionada
                         if (opcao_selecionada == 1)
                         {
@@ -320,15 +311,19 @@ int main()
             case 1:
 
                 //  =================================================================================
-                //                                 Tela do Jogo
+                //                                   Tela do Jogo
                 //  =================================================================================
 
                 {
+                    opcao_selecionada = 0;
                     al_clear_to_color(branco); // limpa a tela a recolorindo toda de branco
-                    int banco_sorteado = 0;
+                    int banco_sorteado;
                     if (!pronto_para_jogar)
                     {
-
+                        for (int i = 0; i < 10; i++)
+                        {
+                            verifica_acerto[i] = false;
+                        }
                         banco_sorteado = rand() % 10;
                         switch (banco_sorteado)
                         {
@@ -439,10 +434,10 @@ int main()
                         for (int i = 0; i < 5; i++)
                         {
                             load += 10;
-                            system("cls");
+                            
                             al_flip_display();
                             al_clear_to_color(branco);
-                            cout << "Carregando " << load << "% ... \n";
+
                             al_draw_textf(font, preto, DISP_W * 0.45, DISP_H * 0.5, 0, "Carregando %d % ...", load);
                             string escolhida = palavras[banco_sorteado][i];
                             bool teste_coluna = true;
@@ -465,7 +460,6 @@ int main()
                                 matriz[j][pos_coluna] = escolhida[iteracao_escolhida];
                             }
 
-                            cout << "vertical " << i << ". Posicao: " << pos_palavra << "," << pos_coluna << " Tamanho: " << escolhida.length() << " " << escolhida << endl;
                             posicoes_palavras_verticais[i][0] = pos_palavra;
                             posicoes_palavras_verticais[i][1] = pos_coluna;
                             posicoes_palavras_verticais[i][2] = pos_palavra + escolhida.length() - 1;
@@ -476,8 +470,8 @@ int main()
                             load += 10;
                             al_flip_display();
                             al_clear_to_color(branco);
-                            system("cls");
-                            cout << "Carregando " << load << "% ... \n";
+                            
+
                             al_draw_textf(font, preto, DISP_W * 0.45, DISP_H * 0.5, 0, "Carregando %d  % ...", load);
                             string escolhida = palavras[banco_sorteado][i];
                             bool teste_linha = true;
@@ -506,7 +500,7 @@ int main()
                             {
                                 matriz[pos_linha][j] = escolhida[iteracao_escolhida];
                             }
-                            cout << "horizontal " << i - 5 << ". Posicao: " << pos_palavra << "," << pos_linha << " Tamanho: " << escolhida.length() << " " << escolhida << endl;
+
                             posicoes_palavras_horizontais[i - 5][0] = pos_palavra;
                             posicoes_palavras_horizontais[i - 5][1] = pos_linha;
                             posicoes_palavras_horizontais[i - 5][2] = pos_palavra + escolhida.length() - 1;
@@ -529,7 +523,7 @@ int main()
                     al_clear_to_color(branco); // limpa a tela a recolorindo toda de branco
                     bool palavra_repetida = false;
 
-                    al_draw_textf(font, preto, DISP_W * 0.35, DISP_H * 0.01, 0, "CAÇA PALAVRAS - TEMA: %s - ACERTOS: %d", tema, acertos);
+                    al_draw_textf(titulos, preto, DISP_W * 0.5, DISP_H * 0.01, ALLEGRO_ALIGN_CENTRE, "CAÇA PALAVRAS - TEMA: %s - ACERTOS: %d", tema, acertos);
                     if (click_button_tes)
                     {
                         al_draw_pixel(mouseClickPositionX_init, mouseClickPositionY_init, preto);
@@ -555,12 +549,22 @@ int main()
                         al_draw_line(linhas_palavras_acertadas[index].posX1, linhas_palavras_acertadas[index].posY1, linhas_palavras_acertadas[index].posX2, linhas_palavras_acertadas[index].posY2, preto, 5);
                     }
                     string palavras_escolhidas = "PALAVRAS:\n\n";
-                      for (int i = 0; i < 10; i++)
+                    for (int i = 0; i < 10; i++)
                     {
                         palavras_escolhidas += palavras[banco_sorteado][i] + "\n";
                     }
-                     al_draw_multiline_text(font, vermelho, DISP_W * 0.1, DISP_H * 0.2, DISP_W * 0.6, al_get_font_line_height(font), ALLEGRO_ALIGN_LEFT, palavras_escolhidas.c_str());
-
+                    al_draw_multiline_text(font, vermelho, DISP_W * 0.1, DISP_H * 0.2, DISP_W * 0.6, al_get_font_line_height(font), ALLEGRO_ALIGN_LEFT, palavras_escolhidas.c_str());
+                    if (palavras_escolhidas != "_______")
+                    {
+                        float y = DISP_H * 0.257;
+                        for (int i = 0; i < 10; i++, y += DISP_H * 0.023)
+                        {
+                            if (verifica_acerto[i])
+                            {
+                                al_draw_line(DISP_W * 0.1, y, DISP_W * 0.17, y, vermelho, 5);
+                            }
+                        }
+                    }
 
                     for (int i = 0; i < 5; i++)
                     {
@@ -574,7 +578,7 @@ int main()
                                     if (
                                         palavras_acertadas[j][0] == posicoes_palavras_verticais[i][0] && palavras_acertadas[j][1] == posicoes_palavras_verticais[i][1] && palavras_acertadas[j][2] == posicoes_palavras_verticais[i][2])
                                     {
-                                        cout << "palavra repetida" << endl;
+
                                         palavra_repetida = true;
                                     }
                                 }
@@ -596,6 +600,7 @@ int main()
                                     mouseClickPositionY_init = NULL;
                                     mouseClickPositionX_end = NULL;
                                     mouseClickPositionY_end = NULL;
+                                    verifica_acerto[i] = true;
                                 }
                             }
                         }
@@ -612,7 +617,7 @@ int main()
                                     if (
                                         palavras_acertadas[j][0] == posicoes_palavras_horizontais[i][0] && palavras_acertadas[j][1] == posicoes_palavras_horizontais[i][1] && palavras_acertadas[j][2] == posicoes_palavras_horizontais[i][2])
                                     {
-                                        cout << "palavras repetidas" << endl;
+
                                         palavra_repetida = true;
                                     }
                                 }
@@ -634,6 +639,7 @@ int main()
                                     mouseClickPositionY_init = NULL;
                                     mouseClickPositionX_end = NULL;
                                     mouseClickPositionY_end = NULL;
+                                    verifica_acerto[i + 5] = true;
                                 }
                             }
                         }
@@ -644,7 +650,7 @@ int main()
                         tela_atual = 0;
                     }
                     al_draw_filled_rounded_rectangle(recomecar.posX1, recomecar.posY1, recomecar.posX2, recomecar.posY2, 1, 1, preto);
-                    al_draw_textf(font, branco, recomecar.posX1 + recomecar.posX1 * 0.03, recomecar.posY1 + recomecar.posY1 * 0.7, 0, "Recomeçar");
+                    al_draw_textf(font, branco, recomecar.posX1 * 1.065, recomecar.posY1 + recomecar.posY1 * 0.55, ALLEGRO_ALIGN_CENTRE, "Recomeçar");
                     if (mouseClickPositionX_init > recomecar.posX1 && mouseClickPositionX_init < recomecar.posX2 && mouseClickPositionY_init > recomecar.posY1 && mouseClickPositionY_init < recomecar.posY2)
                     {
 
@@ -675,7 +681,7 @@ int main()
                 //  =================================================================================
                 {
                     al_draw_text(font, preto, DISP_W * 0.4, DISP_H * 0.1, -1, "COMO JOGAR");
-                    al_draw_multiline_text(font, preto, DISP_W * 0.3, DISP_H * 0.4, DISP_W * 0.6, al_get_font_line_height(font), ALLEGRO_ALIGN_LEFT, "O caça-palavras é um jogo em que o objetivo é encontrar palavras escondidas em uma matriz de letras. As palavras podem estar dispostas na horizontal e vertical, apenas da esquerda para a direita. Elas não podem se sobrepor e compartilhar letras com outras palavras.\n\nPara jogar, você precisa observar a matriz de letras e procurar por palavras que vão em acordo com o tema na parte superior da tela. Use o mouse para selecionar as palavras que encontrar. É importante avisar que as palavras só serão validadas se selecionadas na ordem correta, ou seja, da esquerda para a direta ou de cima para baixo.\n\nExistem 10 opções de temas, com 10 palavras diferentes em cada, sendo eles:\n\n- COMIDAS\n- OPERAÇÕES MATEMÁTICAS\n- CORES\n- PAÍSES DA AMÉRICA DO SUL\n- INSTRUMENTOS DE CORDA\n- ANIMAIS\n- PROFISSÕES\n- RITMOS MUSICAIS\n- ESPORTES\n- ELEMENTOS QUÍMICOS.\n\nAs posições das palavras nunca se repetem, então não faltará opções para jogar.\n\nDIVIRTA-SE!");
+                    al_draw_multiline_text(font, preto, DISP_W * 0.2, DISP_H * 0.25, DISP_W * 0.6, al_get_font_line_height(font), ALLEGRO_ALIGN_LEFT, "O caça-palavras é um jogo em que o objetivo é encontrar palavras escondidas em uma matriz de letras. As palavras podem estar dispostas na horizontal e vertical, apenas da esquerda para a direita. Elas não podem se sobrepor e compartilhar letras com outras palavras.\n\nPara jogar, você precisa observar a matriz de letras e procurar por palavras que vão em acordo com o tema na parte superior da tela. Use o mouse para selecionar as palavras que encontrar. É importante avisar que as palavras só serão validadas se selecionadas na ordem correta, ou seja, da esquerda para a direta ou de cima para baixo.\n\nExistem 10 opções de temas, com 10 palavras diferentes em cada, sendo eles:\n\n- COMIDAS\n- OPERAÇÕES MATEMÁTICAS\n- CORES\n- PAÍSES DA AMÉRICA DO SUL\n- INSTRUMENTOS DE CORDA\n- ANIMAIS\n- PROFISSÕES\n- RITMOS MUSICAIS\n- ESPORTES\n- ELEMENTOS QUÍMICOS.\n\nAs posições das palavras nunca se repetem, então não faltará opções para jogar.\n\nDIVIRTA-SE!");
                     al_draw_filled_triangle(retroceder.posX1, retroceder.posY1, retroceder.posX2, retroceder.posY2, retroceder.posX3, retroceder.posY3, preto);
 
                     if (mouseClickPositionX_init > retroceder.posX3 && mouseClickPositionX_init < retroceder.posX1 && mouseClickPositionY_init > retroceder.posY1 && mouseClickPositionY_init < retroceder.posY2)
@@ -690,52 +696,57 @@ int main()
                 break;
 
             case 3:
-                al_draw_textf(font, preto, DISP_W * 0.35, DISP_H * 0.01, 0, "CAÇA PALAVRAS - TEMA: %s - ACERTOS: %d", tema, acertos);
-                al_draw_filled_rounded_rectangle(recomecar.posX1, recomecar.posY1, recomecar.posX2, recomecar.posY2, 1, 1, preto);
-                al_draw_textf(font, branco, recomecar.posX1 + recomecar.posX1 * 0.03, recomecar.posY1 + recomecar.posY1 * 0.7, 0, "Recomeçar");
-                if (mouseClickPositionX_init > recomecar.posX1 && mouseClickPositionX_init < recomecar.posX2 && mouseClickPositionY_init > recomecar.posY1 && mouseClickPositionY_init < recomecar.posY2)
+                //  =================================================================================
+                //                              Tela de fim de jogo
+                //  =================================================================================
                 {
-
-                    pronto_para_jogar = false;
-                    load = 0;
-                    mouseClickPositionX_end = NULL;
-                    mouseClickPositionY_end = NULL;
-                    mouseClickPositionX_init = NULL;
-                    mouseClickPositionY_init = NULL;
-
-                    acertos = 0;
-
-                    for (int i = 0; i < 10; i++)
+                    al_draw_textf(titulos, preto, DISP_W * 0.5, DISP_H * 0.01, ALLEGRO_ALIGN_CENTRE, "CAÇA PALAVRAS - TEMA: %s - ACERTOS: %d", tema, acertos);
+                    al_draw_filled_rounded_rectangle(recomecar.posX1, recomecar.posY1, recomecar.posX2, recomecar.posY2, 1, 1, preto);
+                    al_draw_textf(font, branco, recomecar.posX1 * 1.065, recomecar.posY1 + recomecar.posY1 * 0.55, ALLEGRO_ALIGN_CENTRE, "Recomeçar");
+                    if (mouseClickPositionX_init > recomecar.posX1 && mouseClickPositionX_init < recomecar.posX2 && mouseClickPositionY_init > recomecar.posY1 && mouseClickPositionY_init < recomecar.posY2)
                     {
-                        linhas_palavras_acertadas[i] = Retangulo();
+
+                        pronto_para_jogar = false;
+                        load = 0;
+                        mouseClickPositionX_end = NULL;
+                        mouseClickPositionY_end = NULL;
+                        mouseClickPositionX_init = NULL;
+                        mouseClickPositionY_init = NULL;
+
+                        acertos = 0;
+
+                        for (int i = 0; i < 10; i++)
+                        {
+                            linhas_palavras_acertadas[i] = Retangulo();
+                        }
+                        tela_atual = 1;
                     }
-                    tela_atual = 1;
-                }
-                al_draw_multiline_text(font, preto, DISP_W * 0.2, DISP_H * 0.2, DISP_W * 0.6, al_get_font_line_height(font), ALLEGRO_ALIGN_LEFT, "Parabéns, voce ganhou!\n Clique em recomeçar para continuar jogando ou aperte a tecla R.");
-                al_draw_filled_triangle(retroceder.posX1, retroceder.posY1, retroceder.posX2, retroceder.posY2, retroceder.posX3, retroceder.posY3, preto);
-                if (mouseClickPositionX_init > retroceder.posX3 && mouseClickPositionX_init < retroceder.posX1 && mouseClickPositionY_init > retroceder.posY1 && mouseClickPositionY_init < retroceder.posY2)
-                {
-                    tela_atual = 0;
-                }
-
-                if (tecla_pressionada == ALLEGRO_KEY_R)
-                {
-                    pronto_para_jogar = false;
-                    load = 0;
-                    mouseClickPositionX_end = NULL;
-                    mouseClickPositionY_end = NULL;
-                    mouseClickPositionX_init = NULL;
-                    mouseClickPositionY_init = NULL;
-
-                    acertos = 0;
-
-                    for (int i = 0; i < 10; i++)
+                    al_draw_multiline_text(titulos, preto, DISP_W * 0.5, DISP_H * 0.4, DISP_W * 0.6, al_get_font_line_height(titulos), ALLEGRO_ALIGN_CENTRE, "Parabéns! Você ganhou!");
+                    al_draw_multiline_text(font, preto, DISP_W * 0.5, DISP_H * 0.43, DISP_W * 0.6, al_get_font_line_height(font), ALLEGRO_ALIGN_CENTRE, "\n Clique em recomeçar para continuar jogando ou aperte a tecla R.");
+                    al_draw_filled_triangle(retroceder.posX1, retroceder.posY1, retroceder.posX2, retroceder.posY2, retroceder.posX3, retroceder.posY3, preto);
+                    if (mouseClickPositionX_init > retroceder.posX3 && mouseClickPositionX_init < retroceder.posX1 && mouseClickPositionY_init > retroceder.posY1 && mouseClickPositionY_init < retroceder.posY2)
                     {
-                        linhas_palavras_acertadas[i] = Retangulo();
+                        tela_atual = 0;
                     }
-                    tela_atual = 1;
-                }
 
+                    if (tecla_pressionada == ALLEGRO_KEY_R)
+                    {
+                        pronto_para_jogar = false;
+                        load = 0;
+                        mouseClickPositionX_end = NULL;
+                        mouseClickPositionY_end = NULL;
+                        mouseClickPositionX_init = NULL;
+                        mouseClickPositionY_init = NULL;
+
+                        acertos = 0;
+
+                        for (int i = 0; i < 10; i++)
+                        {
+                            linhas_palavras_acertadas[i] = Retangulo();
+                        }
+                        tela_atual = 1;
+                    }
+                }
                 break;
             default:
                 done = true;
